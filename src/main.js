@@ -4,13 +4,17 @@
 //
 // Cubey
 //
-// An example of putting sprites on the screen using Phaser
-// 
-// Art assets from Kenny Assets "Shape Characters" set:
-// https://kenney.nl/assets/shape-characters
 
 // debug with extreme prejudice
 "use strict"
+
+//Adjusted by Aaron Mai
+
+//Assets by Kenny Assets
+// Player Character: https://kenney.nl/assets/platformer-art-extended-enemies
+// Enemies: https://kenney.nl/assets/foliage-pack
+// UI and Bullets: https://kenney.nl/assets/puzzle-pack-2
+// Sounds: https://kenney.nl/assets/interface-sounds
 
 // game config
 let config = {
@@ -19,12 +23,9 @@ let config = {
     render: {
         pixelArt: true  // prevent pixel art from getting blurred when scaled
     },
-    width: 1000,
-    height: 800,
-    scene: [Path]
+    width: 600,
+    height: 700,
+    scene: [MainMenu, ShootGame, GameOver, clearWave]
 }
-
-// Global variable to hold sprites
-var my = {sprite: {}};
 
 const game = new Phaser.Game(config);
