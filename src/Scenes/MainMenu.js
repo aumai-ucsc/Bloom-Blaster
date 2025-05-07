@@ -32,6 +32,8 @@ class MainMenu extends Phaser.Scene{
             treeBulletSpeed = 1;
             treeBulletTimer = 180;
             scoreMult = 1;
+            seedRemain = 5;
+            treeRemain = 3;
 
             this.scene.start("shootGame");
         });

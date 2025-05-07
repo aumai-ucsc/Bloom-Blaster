@@ -30,9 +30,13 @@ class clearWave extends Phaser.Scene{
                 treeBulletTimer -= 15;
             }
 
+            //Reset enemy wave
+            seedRemain = 5;
+            treeRemain = 3;
+
             //Increase score multiplier with difficulty up to 2.5x
-            if(scoreMult < 2.5){
-                scoreMult += 0.25;
+            if(scoreMult < 5){
+                scoreMult += 1;
             }
             this.scene.start("shootGame");
         });

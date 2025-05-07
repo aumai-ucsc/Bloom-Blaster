@@ -46,4 +46,8 @@ let treeBulletTimer = 180;
 //Golbal Variable for score multipliers
 let scoreMult = 1;
 
+//For some reason, my enemies are disappearing after they are all defeated
+let seedRemain = 5;
+let treeRemain = 3;
+
 const game = new Phaser.Game(config);

@@ -13,9 +13,11 @@ class ShootGame extends Phaser.Scene{
         //Create the enemy bullet timer
         this.treeBulletCounter = 0;
 
-        //Amount of enemies per wave
-        this.seedRemain = 5;
-        this.treeRemain = 3;
+        //Create bullet arrays
+        this.my.sprite.bulletArr = [];
+        this.my.sprite.treeBulletArr = [];
+        this.maxBullet = 10;
+
     }
 
     preload(){
@@ -62,7 +64,7 @@ class ShootGame extends Phaser.Scene{
              }).setOrigin(0.5);
         
         //Create Score Text
-        this.add.text(20, 5, 'Score: ' + playerScore,
+        this.scoreBoard = this.add.text(20, 5, 'Score: ' + playerScore,
             { 
                fontFamily: 'Indie Flower',
                fontSize: '35px',
@@ -75,45 +77,7 @@ class ShootGame extends Phaser.Scene{
                fontSize: '75px',
              }).setOrigin(0.5);
 
-        //Create Bullet Group
-        my.sprite.bulletGroup = this.add.group({
-            active: true,
-            defaultKey: "bullet",
-            maxSize: 10,
-            runChildUpdate: true
-            }
-        );
-        //Create the bullets in group
-        my.sprite.bulletGroup.createMultiple({
-            classType: Bullet,
-            active: false,
-            key: my.sprite.bulletGroup.defaultKey,
-            repeat: my.sprite.bulletGroup.maxSize-1,
-            visible: false
-        });
-        my.sprite.bulletGroup.propertyValueSet("speed", 3);
-        my.sprite.bulletGroup.scaleX(0.15);
-
-        //Create bullet group of enemies
-        my.sprite.treeBulletGroup = this.add.group({
-            active: true,
-            defaultKey: "sap",
-            maxSize: 10,
-            runChildUpdate: true
-            }
-        )
-        //Create the bullets in group
-        my.sprite.treeBulletGroup.createMultiple({
-            classType: TreeBullet,
-            active: false,
-            key: "sap",
-            repeat: my.sprite.bulletGroup.maxSize-1,
-            visible: false
-        });
-        my.sprite.treeBulletGroup.propertyValueSet("speed", treeBulletSpeed);
-        my.sprite.treeBulletGroup.angle = 180;
-        my.sprite.treeBulletGroup.scaleX(0.15);
-
+    
         //Create ememy paths
 
         //Path for phalanx
@@ -188,6 +152,7 @@ class ShootGame extends Phaser.Scene{
         wKey.on('down', (key, event) =>{
             this.scene.start("clearWave");
         });
+
     }
 
     update(){
@@ -206,42 +171,64 @@ class ShootGame extends Phaser.Scene{
 
         //Shoot bullet functionality
         this.bulletCounter--;
-        if (this.space.isDown) {
-            if (this.bulletCounter < 0) {
-                //Make first bullet active
-                let bullet = my.sprite.bulletGroup.getFirstDead();
-                //Check for if there are no inactive (available) bullets
-                if (bullet != null) {
-                    this.bulletCounter = this.bulletTimer;
-                    bullet.setScale(0.15);
-                    bullet.makeActive();
-                    bullet.x = my.sprite.player.x;
-                    bullet.y = my.sprite.player.y - (my.sprite.player.displayHeight/2);
-                }
+        if (this.space.isDown && this.bulletCounter < 0) {
+            this.bulletCounter = this.bulletTimer
+            if (my.sprite.bulletArr.length < this.maxBullet) {
+                my.sprite.bulletArr.push(this.add.sprite(
+                    my.sprite.player.x, my.sprite.player.y, "bullet")
+                );
+                my.sprite.bulletArr[my.sprite.bulletArr.length-1].setScale(0.15, 0.15);
             }
+        }
+        //Remove Bullets
+        my.sprite.bulletArr = my.sprite.bulletArr.filter((bullet) => bullet.y > -(bullet.displayHeight/2));
+        //Move bullets
+        for (let bullet of my.sprite.bulletArr) {
+            bullet.y -= 3;
         }
 
         //Enemy bullet functinality
         this.treeBulletCounter--;
-
-        //Check to see if tree is still on the screen
-        if(my.sprite.tree.visible == true){
-            if (this.treeBulletCounter < 0) {
-                //Make first bullet active
-                let treeBullet = my.sprite.treeBulletGroup.getFirstDead();
-                //Check for if there are no inactive (available) bullets
-                if (treeBullet != null) {
-                    this.treeBulletCounter = treeBulletTimer;
-                    treeBullet.setScale(0.15);
-                    treeBullet.makeActive();
-                    treeBullet.x = my.sprite.tree.x;
-                    treeBullet.y = my.sprite.tree.y - (my.sprite.tree.displayHeight/2);
-                }
+        if (my.sprite.tree.visible && this.treeBulletCounter < 0) {
+            this.treeBulletCounter = treeBulletTimer
+            if (my.sprite.treeBulletArr.length < this.maxBullet) {
+                my.sprite.treeBulletArr.push(this.add.sprite(
+                    my.sprite.tree.x, my.sprite.tree.y, "sap")
+                );
+                my.sprite.treeBulletArr[my.sprite.treeBulletArr.length-1].setScale(0.15, 0.15);
             }
         }
+        //Remove Bullets
+        my.sprite.treeBulletArr = my.sprite.treeBulletArr.filter((treeBullet) => treeBullet.y < (700 + treeBullet.displayHeight/2));
+        //Move bullets
+        for (let bullet of my.sprite.treeBulletArr) {
+            bullet.y += treeBulletSpeed;
+        }
+        
+        //Stop enemy follow
+        //If reaching end of path
+        if(my.sprite.seed.x == 500 && my.sprite.seed.y == 700){
+            //Reduce number of seed enemies left to spawn
+            seedRemain--;
+            //Make seed invisible
+            my.sprite.seed.visible = false;
+            //Stop follow for seed
+            my.sprite.seed.stopFollow();
+            //Decrease Health
+            playerHealth--;
+        }
+        if(my.sprite.tree.x == 600 && my.sprite.tree.y == 450){
+            //Reduce number of tree enemies left to spawn
+            treeRemain--;
+            //Make tree invisible
+            my.sprite.tree.visible = false;
+            //Stop follow for tree
+            my.sprite.tree.stopFollow();
+        }
+
 
         //Enemy Spawning
-        if(this.seedRemain > 0 && my.sprite.seed.visible == false){
+        if(seedRemain > 0 && my.sprite.seed.visible == false){
             //Set location
             my.sprite.seed.setX(this.phalanx.points[0].x);
             my.sprite.seed.setY(this.phalanx.points[0].y);
@@ -257,7 +244,7 @@ class ShootGame extends Phaser.Scene{
                 yoyo: false,
             });
         }
-        if(this.treeRemain > 0 && my.sprite.tree.visible == false){
+        if(treeRemain > 0 && my.sprite.tree.visible == false){
             //Set location
             my.sprite.tree.setX(this.freeFly.points[0].x);
             my.sprite.tree.setY(this.freeFly.points[0].y);
@@ -276,32 +263,57 @@ class ShootGame extends Phaser.Scene{
             }, 0);
         }
 
-        //Stop enemy follow
-        //If reaching end of path
-        if(my.sprite.seed.x == 500 && my.sprite.seed.y == 700){
+        //Bullet collision with enemy
+        for (let bullet of my.sprite.bulletArr) {
+            if (this.collides(my.sprite.seed, bullet) && my.sprite.seed.visible) {
+            //Make sprite invisible
+            bullet.visible = false;
+            //Remove sprite from array
+            bullet.destroy();
             //Reduce number of seed enemies left to spawn
-            this.seedRemain--;
+            seedRemain--;
             //Make seed invisible
             my.sprite.seed.visible = false;
-            //Stop follow for tree
+            //Stop follow for seed
             my.sprite.seed.stopFollow();
-        }
-        if(my.sprite.tree.x == 600 && my.sprite.tree.y == 450){
-            //Reduce number of tree enemies left to spawn
-            this.treeRemain--;
-            //Make tree invisible
-            my.sprite.tree.visible = false;
-            //Stop follow for tree
-            my.sprite.tree.stopFollow();
+            //Decrease Health
+            playerScore += 5 * scoreMult;
+            //Update score
+            this.scoreBoard.setText('Score: ' + playerScore);
+            }
+            if (this.collides(my.sprite.tree, bullet) && my.sprite.tree.visible) {
+                //Make sprite invisible
+                bullet.visible = false;
+                //Remove sprite from array
+                bullet.destroy();
+                //Reduce number of seed enemies left to spawn
+                treeRemain--;
+                //Make seed invisible
+                my.sprite.tree.visible = false;
+                //Stop follow for seed
+                my.sprite.tree.stopFollow();
+                //Decrease Health
+                playerScore += 10 * scoreMult;
+                //Update score
+                this.scoreBoard.setText('Score: ' + playerScore);
+                }
         }
 
-        //Bullet collision with enemy
-        for (bullet in bulletGroup){
-            if(bullet.active){
-                
+        //Bullet enemy collision with player
+        for (let bullet of my.sprite.treeBulletArr){
+            if (this.collides(my.sprite.player, bullet)){
+                //Make sprite invisible
+                bullet.visible = false;
+                my.sprite.treeBullet.splice(index, 1);
+                //Reduce Player Health
+                playerHealth--;
             }
         }
-
+        
+        //Clear Wave
+        if (seedRemain <= 0 && treeRemain <= 0){
+            this.scene.start("clearWave");
+        }
 
         //Game Over
         if (playerHealth == 0){
@@ -313,6 +325,7 @@ class ShootGame extends Phaser.Scene{
     collides(a, b) {
         if (Math.abs(a.x - b.x) > (a.displayWidth/2 + b.displayWidth/2)) return false;
         if (Math.abs(a.y - b.y) > (a.displayHeight/2 + b.displayHeight/2)) return false;
+        console.log('Bullet hit')
         return true;
     }
 }
