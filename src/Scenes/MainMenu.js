@@ -25,9 +25,14 @@ class MainMenu extends Phaser.Scene{
         //Event input: start Game
         let sKey = this.input.keyboard.addKey (Phaser.Input.Keyboard.KeyCodes.S);
         sKey.on('down', (key, event) =>{
+            //Reset all game variables
             playerScore = 0;
             playerHealth = 3;
             shipSpeed = 10000;
+            treeBulletSpeed = 1;
+            treeBulletTimer = 180;
+            scoreMult = 1;
+
             this.scene.start("shootGame");
         });
          

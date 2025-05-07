@@ -39,4 +39,11 @@ let playerHealth = 3;
 //Global Variable for enemy speed
 let shipSpeed = 10000;
 
+//Global variable of enemy bullet properties
+let treeBulletSpeed = 1;
+let treeBulletTimer = 180;
+
+//Golbal Variable for score multipliers
+let scoreMult = 1;
+
 const game = new Phaser.Game(config);

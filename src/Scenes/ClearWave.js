@@ -19,8 +19,20 @@ class clearWave extends Phaser.Scene{
         //Event input: Continue
         let sKey = this.input.keyboard.addKey (Phaser.Input.Keyboard.KeyCodes.S);
         sKey.on('down', (key, event) =>{
+            //Difficulty increasers after every wave
             if(shipSpeed > 2000){
                 shipSpeed -= 1000;
+            }
+            if(treeBulletSpeed < 4){
+                treeBulletSpeed ++;
+            }
+            if(treeBulletTimer > 30){
+                treeBulletTimer -= 15;
+            }
+
+            //Increase score multiplier with difficulty up to 2.5x
+            if(scoreMult < 2.5){
+                scoreMult += 0.25;
             }
             this.scene.start("shootGame");
         });
