@@ -7,6 +7,10 @@ class ShootGame extends Phaser.Scene{
 
         //Create health Value
         this.health = 3; //Will Update when player takes damage, reset to 3 every level
+
+        //Create a bullet timer
+        this.bulletTimer = 5;
+        this.bulletCounter = 0;
     }
 
     preload(){
@@ -16,6 +20,9 @@ class ShootGame extends Phaser.Scene{
 
         //Sprite for health
         this.load.image("health", "tileBlue_12.png");
+
+        //Sprite for Player Bullet
+       this.load.image("bullet", "ballBlue_09.png"); 
     }
 
     create(){
@@ -55,6 +62,23 @@ class ShootGame extends Phaser.Scene{
                fontSize: '75px',
              }).setOrigin(0.5);
 
+        //Create Bullet Group
+        my.sprite.bulletGroup = this.add.group({
+            active: true,
+            defaultKey: "bullet",
+            maxSize: 3,
+            runChildUpdate: true
+            }
+        )
+        //Create the bullets in group
+        my.sprite.bulletGroup.createMultiple({
+            classType: Bullet,
+            active: false,
+            key: my.sprite.bulletGroup.defaultKey,
+            repeat: my.sprite.bulletGroup.maxSize-1
+        });
+        my.sprite.bulletGroup.propertyValueSet("speed", 5);
+        my.sprite.bulletGroup.scaleX(0.15);
     
         //Event input: Game Over DEBUG
         let sKey = this.input.keyboard.addKey (Phaser.Input.Keyboard.KeyCodes.S);
@@ -82,6 +106,24 @@ class ShootGame extends Phaser.Scene{
         if (this.health == 1){
             my.sprite.midHeart.visible = false;
         }
+
+        //Shoot bullet functionality
+        this.bulletCounter--;
+        if (this.space.isDown) {
+            if (this.bulletCounter < 0) {
+                //Make first bullet active
+                let bullet = my.sprite.bulletGroup.getFirstDead();
+                //Check for if there are no inactive (available) bullets
+                if (bullet != null) {
+                    this.bulletCounter = this.bulletTimer;
+                    bullet.setScale(0.15);
+                    bullet.makeActive();
+                    bullet.x = my.sprite.player.x;
+                    bullet.y = my.sprite.player.y - (my.sprite.player.displayHeight/2);
+                }
+            }
+        }
+
         
         //Game Over
         if (this.health == 0){
