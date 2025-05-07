@@ -19,6 +19,9 @@ class clearWave extends Phaser.Scene{
         //Event input: Continue
         let sKey = this.input.keyboard.addKey (Phaser.Input.Keyboard.KeyCodes.S);
         sKey.on('down', (key, event) =>{
+            if(shipSpeed > 2000){
+                shipSpeed -= 1000;
+            }
             this.scene.start("shootGame");
         });
     }

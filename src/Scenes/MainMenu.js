@@ -27,6 +27,7 @@ class MainMenu extends Phaser.Scene{
         sKey.on('down', (key, event) =>{
             playerScore = 0;
             playerHealth = 3;
+            shipSpeed = 10000;
             this.scene.start("shootGame");
         });
          

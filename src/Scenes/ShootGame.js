@@ -1,9 +1,5 @@
 class ShootGame extends Phaser.Scene{
 
-    graphics;
-    phalanx;
-
-
     constructor(playerScore){
         super("shootGame", playerScore);
 
@@ -25,6 +21,9 @@ class ShootGame extends Phaser.Scene{
 
         //Sprite for Player Bullet
        this.load.image("bullet", "ballBlue_09.png"); 
+
+       //Sprites for ememies
+       this.load.image("seed", "foliagePack_019.png")
     }
 
     create(){
@@ -136,6 +135,13 @@ class ShootGame extends Phaser.Scene{
         this.spinGraph.lineStyle(2, 0xffffff, 1);
         this.freeFly.draw(this.spinGraph, 32);
         */
+        //Phalanx Enemy
+        my.sprite.seed = this.add.follower(this.phalanx, 10, 10, "seed");
+        //Set location
+        my.sprite.seed.setX(this.phalanx.points[0].x);
+        my.sprite.seed.setY(this.phalanx.points[0].y);
+        //Start Follow
+        my.sprite.seed.startFollow(shipSpeed);
 
     
         //Event input: Game Over DEBUG

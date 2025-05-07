@@ -36,4 +36,7 @@ let playerScore = 0;
 //Global Variable for player health
 let playerHealth = 3;
 
+//Global Variable for enemy speed
+let shipSpeed = 10000;
+
 const game = new Phaser.Game(config);
