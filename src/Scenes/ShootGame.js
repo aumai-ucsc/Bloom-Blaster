@@ -5,11 +5,8 @@ class ShootGame extends Phaser.Scene{
         //Object to hold sprites
         this.my = {sprite: {}};
 
-        //Create health Value
-        this.health = 3; //Will Update when player takes damage, reset to 3 every level
-
         //Create a bullet timer
-        this.bulletTimer = 5;
+        this.bulletTimer = 60;
         this.bulletCounter = 0;
     }
 
@@ -36,10 +33,6 @@ class ShootGame extends Phaser.Scene{
         //Create player sprite
         my.sprite.player = new Player(this, game.config.width/2, game.config.height - 50, "player", null, this.left, this.right, 3);
         my.sprite.player.setScale(0.75);
-
-
-        //Reset Health to full
-        this.health = 3;
 
         //Create health sprites
         my.sprite.leftHeart = this.add.sprite(game.config.width - 130, 30, "health");
@@ -73,7 +66,7 @@ class ShootGame extends Phaser.Scene{
         my.sprite.bulletGroup = this.add.group({
             active: true,
             defaultKey: "bullet",
-            maxSize: 3,
+            maxSize: 10,
             runChildUpdate: true
             }
         )
@@ -85,13 +78,13 @@ class ShootGame extends Phaser.Scene{
             repeat: my.sprite.bulletGroup.maxSize-1,
             visible: false
         });
-        my.sprite.bulletGroup.propertyValueSet("speed", 5);
+        my.sprite.bulletGroup.propertyValueSet("speed", 3);
         my.sprite.bulletGroup.scaleX(0.15);
     
         //Event input: Game Over DEBUG
         let sKey = this.input.keyboard.addKey (Phaser.Input.Keyboard.KeyCodes.S);
         sKey.on('down', (key, event) =>{
-            this.health--;
+            playerHealth--;
         });
 
         //Event input: Clear Wave
@@ -108,10 +101,10 @@ class ShootGame extends Phaser.Scene{
         my.sprite.player.update();
 
         //Health Updates
-        if (this.health == 2){
+        if (playerHealth <= 2){
             my.sprite.rightHeart.visible = false;
         }
-        if (this.health == 1){
+        if (playerHealth <= 1){
             my.sprite.midHeart.visible = false;
         }
 
@@ -133,7 +126,7 @@ class ShootGame extends Phaser.Scene{
         }
         
         //Game Over
-        if (this.health == 0){
+        if (playerHealth == 0){
             this.scene.start("gameOver");
         }
 

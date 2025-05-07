@@ -28,7 +28,12 @@ let config = {
     scene: [MainMenu, ShootGame, GameOver, clearWave]
 }
 
-//Global Variable for PLayerscore
+
+//Persitstent Variables between waves
+//Global Variable for player score
 let playerScore = 0;
+
+//Global Variable for player health
+let playerHealth = 3;
 
 const game = new Phaser.Game(config);
