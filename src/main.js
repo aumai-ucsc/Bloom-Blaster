@@ -28,4 +28,7 @@ let config = {
     scene: [MainMenu, ShootGame, GameOver, clearWave]
 }
 
+//Global Variable for PLayerscore
+let playerScore = 0;
+
 const game = new Phaser.Game(config);

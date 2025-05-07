@@ -25,6 +25,7 @@ class MainMenu extends Phaser.Scene{
         //Event input: start Game
         let sKey = this.input.keyboard.addKey (Phaser.Input.Keyboard.KeyCodes.S);
         sKey.on('down', (key, event) =>{
+            playerScore = 0;
             this.scene.start("shootGame");
         });
          

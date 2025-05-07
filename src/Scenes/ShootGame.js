@@ -1,6 +1,6 @@
 class ShootGame extends Phaser.Scene{
-    constructor(){
-        super("shootGame");
+    constructor(playerScore){
+        super("shootGame", playerScore);
 
         //Object to hold sprites
         this.my = {sprite: {}};
@@ -55,6 +55,13 @@ class ShootGame extends Phaser.Scene{
                fontSize: '35px',
              }).setOrigin(0.5);
         
+        //Create Score Text
+        this.add.text(20, 5, 'Score: ' + playerScore,
+            { 
+               fontFamily: 'Indie Flower',
+               fontSize: '35px',
+             });
+        
         //Create Title
         this.add.text(300, 250, 'S Game over\n W Continue',
             { 
@@ -75,7 +82,8 @@ class ShootGame extends Phaser.Scene{
             classType: Bullet,
             active: false,
             key: my.sprite.bulletGroup.defaultKey,
-            repeat: my.sprite.bulletGroup.maxSize-1
+            repeat: my.sprite.bulletGroup.maxSize-1,
+            visible: false
         });
         my.sprite.bulletGroup.propertyValueSet("speed", 5);
         my.sprite.bulletGroup.scaleX(0.15);
@@ -123,7 +131,6 @@ class ShootGame extends Phaser.Scene{
                 }
             }
         }
-
         
         //Game Over
         if (this.health == 0){
