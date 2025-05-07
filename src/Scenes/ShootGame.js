@@ -1,4 +1,9 @@
 class ShootGame extends Phaser.Scene{
+
+    graphics;
+    phalanx;
+
+
     constructor(playerScore){
         super("shootGame", playerScore);
 
@@ -80,6 +85,58 @@ class ShootGame extends Phaser.Scene{
         });
         my.sprite.bulletGroup.propertyValueSet("speed", 3);
         my.sprite.bulletGroup.scaleX(0.15);
+
+        //Create ememy paths
+
+        //Path for phalanx
+        this.pointsPhalanx = [
+            75, 25,
+            75, 200,
+            500, 200,
+            500, 300,
+            75, 300,
+            75, 450,
+            500, 500,
+            500, 700
+        ];
+
+        //Path for tree movement
+        this.pointsSpin = [
+            500, 25,
+            500, 250,
+            450, 150,
+            400, 250,
+            350, 300,
+            300, 250,
+            250, 150,
+            200, 250,
+            150, 300,
+            100, 250,
+            50, 500,
+            100, 450,
+            150, 500,
+            200, 550,
+            250, 500,
+            300, 450,
+            350, 500,
+            400, 550,
+            450, 500,
+            500, 450,
+            500, 700,
+        ]
+        this.phalanx = new Phaser.Curves.Spline(this.pointsPhalanx);
+        this.freeFly = new Phaser.Curves.Spline(this.pointsSpin);
+        // Initialize Phaser graphics, used to draw lines: DEBUG TO CHECK PATHS
+        /*
+        this.graphics = this.add.graphics();
+        this.graphics.lineStyle(2, 0xffffff, 1);
+        this.phalanx.draw(this.graphics, 32);
+
+        this.spinGraph = this.add.graphics();
+        this.spinGraph.lineStyle(2, 0xffffff, 1);
+        this.freeFly.draw(this.spinGraph, 32);
+        */
+
     
         //Event input: Game Over DEBUG
         let sKey = this.input.keyboard.addKey (Phaser.Input.Keyboard.KeyCodes.S);
