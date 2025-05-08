@@ -308,6 +308,8 @@ class ShootGame extends Phaser.Scene{
             if (this.collides(my.sprite.tree, bullet) && my.sprite.tree.visible) {
                 //Bullet animations
                 this.flourish = this.add.sprite(my.sprite.tree.x, my.sprite.tree.y, "tree").play("flourish");
+                //Play sound
+                this.sound.play("grow");
 
                 //Remove sprite from array by moving it outside of bounds
                 bullet.y = -100;
