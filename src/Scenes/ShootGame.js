@@ -35,6 +35,21 @@ class ShootGame extends Phaser.Scene{
        this.load.image("seed", "foliagePack_019.png");  //Phalanx enemy
        this.load.image("tree", "foliagePack_022.png");  //Tree enemy
        this.load.image("sap", "particleYellow_5.png");  //Tree bullet
+
+       //Animations
+       //Seed Animations
+       this.load.image("bloom1", "foliagePack_002.png");
+       this.load.image("bloom2", "foliagePack_001.png");
+
+       //Tree Animations
+       this.load.image("tree1", "foliagePack_036.png");
+       this.load.image("tree2", "foliagePack_029.png");
+       this.load.image("tree3", "foliagePack_032.png");
+
+       //Sounds
+       this.load.audio("shoot", "scratch_004.ogg");
+       this.load.audio("grow", "maximize_006.ogg");
+       this.load.audio("hit", "error_003.ogg");
     }
 
     create(){
@@ -69,15 +84,29 @@ class ShootGame extends Phaser.Scene{
                fontFamily: 'Indie Flower',
                fontSize: '35px',
              });
-        
-        //Create Title
-        this.add.text(300, 250, 'S Game over\n W Continue',
-            { 
-               fontFamily: 'Indie Flower',
-               fontSize: '75px',
-             }).setOrigin(0.5);
 
-    
+        //Create Animations
+        this.anims.create({
+            key: "sprout",
+            frames: [
+                { key: "bloom1" },
+                { key: "bloom2" },
+            ],
+            frameRate: 4,
+            hideOnComplete: true
+        });
+        this.anims.create({
+            key: "flourish",
+            frames: [
+                { key: "tree"},
+                { key: "tree1"},
+                { key: "tree2"},
+               { key: "tree3"},
+            ],
+            frameRate: 6,
+            hideOnComplete: true
+        })
+
         //Create ememy paths
 
         //Path for phalanx
@@ -140,18 +169,8 @@ class ShootGame extends Phaser.Scene{
         //Make invisible
         my.sprite.tree.visible = false;
 
-    
-        //Event input: Game Over DEBUG
-        let sKey = this.input.keyboard.addKey (Phaser.Input.Keyboard.KeyCodes.S);
-        sKey.on('down', (key, event) =>{
-            playerHealth--;
-        });
-
-        //Event input: Clear Wave
-        let wKey = this.input.keyboard.addKey (Phaser.Input.Keyboard.KeyCodes.W);
-        wKey.on('down', (key, event) =>{
-            this.scene.start("clearWave");
-        });
+        //Controls
+        document.getElementById('description').innerHTML = '<h2>ShootGame.js</h2><br>A: Move Left <br>D: Move Right <br>SPACE: Shoot';
 
     }
 
@@ -178,6 +197,7 @@ class ShootGame extends Phaser.Scene{
                     my.sprite.player.x, my.sprite.player.y, "bullet")
                 );
                 my.sprite.bulletArr[my.sprite.bulletArr.length-1].setScale(0.15, 0.15);
+                this.sound.play("shoot");
             }
         }
         //Remove Bullets
@@ -266,27 +286,32 @@ class ShootGame extends Phaser.Scene{
         //Bullet collision with enemy
         for (let bullet of my.sprite.bulletArr) {
             if (this.collides(my.sprite.seed, bullet) && my.sprite.seed.visible) {
-            //Make sprite invisible
-            bullet.visible = false;
-            //Remove sprite from array
-            bullet.destroy();
-            //Reduce number of seed enemies left to spawn
-            seedRemain--;
-            //Make seed invisible
-            my.sprite.seed.visible = false;
-            //Stop follow for seed
-            my.sprite.seed.stopFollow();
-            //Decrease Health
-            playerScore += 5 * scoreMult;
-            //Update score
-            this.scoreBoard.setText('Score: ' + playerScore);
+                //Bullet animations
+                this.bloom = this.add.sprite(my.sprite.seed.x, my.sprite.seed.y, "seed").play("sprout");
+
+                //Play sound
+                this.sound.play("grow");
+
+                //Remove sprite from array by moving it outside of bounds
+                bullet.y = -100;
+                //Reduce number of seed enemies left to spawn
+                seedRemain--;
+                //Make seed invisible
+                my.sprite.seed.visible = false;
+                //Stop follow for seed
+                my.sprite.seed.stopFollow();
+                //Decrease Health
+                playerScore += 5 * scoreMult;
+                //Update score
+                this.scoreBoard.setText('Score: ' + playerScore);
             }
             if (this.collides(my.sprite.tree, bullet) && my.sprite.tree.visible) {
-                //Make sprite invisible
-                bullet.visible = false;
-                //Remove sprite from array
-                bullet.destroy();
-                //Reduce number of seed enemies left to spawn
+                //Bullet animations
+                this.flourish = this.add.sprite(my.sprite.tree.x, my.sprite.tree.y, "tree").play("flourish");
+
+                //Remove sprite from array by moving it outside of bounds
+                bullet.y = -100;
+                //Reduce number of tree enemies left to spawn
                 treeRemain--;
                 //Make seed invisible
                 my.sprite.tree.visible = false;
@@ -302,9 +327,10 @@ class ShootGame extends Phaser.Scene{
         //Bullet enemy collision with player
         for (let bullet of my.sprite.treeBulletArr){
             if (this.collides(my.sprite.player, bullet)){
-                //Make sprite invisible
-                bullet.visible = false;
-                my.sprite.treeBullet.splice(index, 1);
+                //Remove bullet
+                bullet.y = 800;
+                //Play sound
+                this.sound.play("hit");
                 //Reduce Player Health
                 playerHealth--;
             }
@@ -312,11 +338,26 @@ class ShootGame extends Phaser.Scene{
         
         //Clear Wave
         if (seedRemain <= 0 && treeRemain <= 0){
+            //Move bullets off screen
+            for (let bullet of my.sprite.treeBulletArr){
+                bullet.y = 800;
+            }
+            for (let bullet of my.sprite.bulletArr){
+                bullet.y = -100;
+            }
+
             this.scene.start("clearWave");
         }
 
         //Game Over
         if (playerHealth == 0){
+            //Move bullets off screen
+            for (let bullet of my.sprite.treeBulletArr){
+                bullet.y = 800;
+            }
+            for (let bullet of my.sprite.bulletArr){
+                bullet.y = -100;
+            }
             this.scene.start("gameOver");
         }
 
